@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.util.UUID;
@@ -22,7 +23,7 @@ import org.ticketing.user.domain.enums.UserStatus;
 public class User extends BaseEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID userId;
 
     @Column(name = "email", length = 100, nullable = false, unique = true)
@@ -65,6 +66,19 @@ public class User extends BaseEntity {
         return user;
     }
 
+    public void update(String name, String phone) {
+        if (name != null && !name.isBlank()) {
+            this.name = name;
+        }
+        if (phone != null && !phone.isBlank()) {
+            this.phone = phone;
+        }
+    }
+
+    public void updateSlackUserId(String slackUserId) {
+        this.slackUserId = slackUserId;
+    }
+
     public void approve() {
         this.status = UserStatus.APPROVED;
     }
@@ -74,10 +88,15 @@ public class User extends BaseEntity {
     }
 
     public void delete() {
+        if (this.status == UserStatus.DELETED) {
+            return;
+        }
+
         this.status = UserStatus.DELETED;
+        super.delete(null);
     }
 
     public boolean isActive() {
-        return this.status == UserStatus.APPROVED;
+        return this.status == UserStatus.APPROVED && this.deletedAt == null;
     }
 }

@@ -1,5 +1,6 @@
 package org.ticketing.user.infrastructure.repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -15,12 +16,22 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<User> findById(UUID userId) {
-        return jpaUserRepository.findById(userId);
+        return jpaUserRepository.findByUserIdAndDeletedAtIsNull(userId);
     }
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return jpaUserRepository.findByEmail(email);
+        return jpaUserRepository.findByEmailAndDeletedAtIsNull(email);
+    }
+
+    @Override
+    public List<User> findAll() {
+        return jpaUserRepository.findAllByDeletedAtIsNull();
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return jpaUserRepository.existsByEmail(email);
     }
 
     @Override

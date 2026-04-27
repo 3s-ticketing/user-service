@@ -5,7 +5,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
 
 @SpringBootApplication(
-	scanBasePackages = "org.ticketing",
+	scanBasePackages = {
+		"org.ticketing.user",
+		"org.ticketing.config",
+		"org.ticketing.common.exception",
+		"org.ticketing.common.filter",
+		"org.ticketing.common.util"
+	},
 	exclude = JpaRepositoriesAutoConfiguration.class
 )
 public class UserServiceApplication {
