@@ -15,6 +15,15 @@ java {
 
 repositories {
 	mavenCentral()
+
+	maven {
+		name = "GitHubPackages"
+		url = uri("https://maven.pkg.github.com/3s-ticketing/common-module")
+		credentials {
+			username = System.getenv("GPR_USER")
+			password = System.getenv("GPR_TOKEN")
+		}
+	}
 }
 
 ext {
@@ -22,6 +31,9 @@ ext {
 }
 
 dependencies {
+	// 공통 모듈 (org.ticketing:common:2.0-SNAPSHOT 로 publish 됨)
+	implementation 'org.ticketing:common:2.0-SNAPSHOT'
+
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 	implementation 'org.springframework.cloud:spring-cloud-starter-config'
@@ -33,6 +45,7 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'com.h2database:h2'
 }
 
 dependencyManagement {

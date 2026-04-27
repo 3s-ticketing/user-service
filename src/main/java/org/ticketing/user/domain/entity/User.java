@@ -11,6 +11,7 @@ import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.ticketing.common.domain.BaseEntity;
 import org.ticketing.user.domain.enums.UserRole;
 import org.ticketing.user.domain.enums.UserStatus;
 
@@ -18,7 +19,7 @@ import org.ticketing.user.domain.enums.UserStatus;
 @Table(name = "p_user")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User {
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue
