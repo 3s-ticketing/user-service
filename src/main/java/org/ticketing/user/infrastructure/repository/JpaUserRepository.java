@@ -16,5 +16,5 @@ public interface JpaUserRepository extends JpaRepository<User, UUID> {
 
     List<User> findAllByDeletedAtIsNull();
 
-    boolean existsByEmail(String email);
+    boolean existsByEmailAndDeletedAtIsNull(String email);
 }

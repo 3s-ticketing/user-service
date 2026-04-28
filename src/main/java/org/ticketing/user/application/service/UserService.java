@@ -19,7 +19,7 @@ public class UserService {
 
     @Transactional
     public User signUp(String email, String name, String phone) {
-        if (userRepository.existsByEmail(email)) {
+        if (userRepository.existsByEmailAndDeletedAtIsNull(email)) {
             throw new ConflictException("이미 존재하는 이메일입니다.");
         }
 

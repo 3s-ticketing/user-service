@@ -30,8 +30,8 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public boolean existsByEmail(String email) {
-        return jpaUserRepository.existsByEmail(email);
+    public boolean existsByEmailAndDeletedAtIsNull(String email) {
+        return jpaUserRepository.existsByEmailAndDeletedAtIsNull(email);
     }
 
     @Override

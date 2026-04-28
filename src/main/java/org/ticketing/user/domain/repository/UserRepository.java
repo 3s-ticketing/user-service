@@ -13,7 +13,7 @@ public interface UserRepository {
 
     List<User> findAll();
 
-    boolean existsByEmail(String email);
+    boolean existsByEmailAndDeletedAtIsNull(String email);
 
     User save(User user);
 }
