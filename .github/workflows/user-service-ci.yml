@@ -11,6 +11,12 @@ on:
       - main
       - feature/**
       - feat/**
+      - fix/**
+      - chore/**
+
+permissions:
+  contents: read
+  packages: read
 
 jobs:
   build-and-test:
@@ -32,4 +38,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Run tests
+        env:
+          GPR_USER: ${{ github.actor }}
+          GPR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew clean test
