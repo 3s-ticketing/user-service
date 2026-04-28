@@ -56,4 +56,11 @@ dependencyManagement {
 
 tasks.named('test') {
 	useJUnitPlatform()
+
+	systemProperty 'spring.profiles.active', 'test'
+	systemProperty 'spring.cloud.config.enabled', 'false'
+	systemProperty 'spring.cloud.config.fail-fast', 'false'
+	systemProperty 'spring.cloud.bootstrap.enabled', 'false'
+	systemProperty 'spring.cloud.discovery.enabled', 'false'
+	systemProperty 'eureka.client.enabled', 'false'
 }

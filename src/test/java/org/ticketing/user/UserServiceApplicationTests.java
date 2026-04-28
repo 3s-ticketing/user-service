@@ -10,10 +10,7 @@ import org.ticketing.user.domain.entity.User;
 import org.ticketing.user.infrastructure.repository.JpaUserRepository;
 
 @ActiveProfiles("test")
-@SpringBootTest(properties = {
-	"spring.config.import=optional:configserver:http://localhost:8888",
-	"eureka.client.enabled=false"
-})
+@SpringBootTest
 class UserServiceApplicationTests {
 
 	@Autowired
