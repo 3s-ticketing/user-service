@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -27,11 +28,6 @@ public class UserSecurityConfig {
         "/error",
         "/actuator/health",
 
-        // 인증 없이 접근 가능해야 하는 API
-        "/api/v1/users/signup",
-        "/api/v1/users/login",
-        "/api/v1/users/refresh",
-
         // Swagger 사용 시
         "/swagger-ui/**",
         "/v3/api-docs/**"
@@ -48,6 +44,14 @@ public class UserSecurityConfig {
             .httpBasic(httpBasic -> httpBasic.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(PERMIT_ALL_URLS).permitAll()
+
+                // 회원가입
+                .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
+
+                // 로그인
+                .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+
+                // 그 외 요청은 인증 필요
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2
