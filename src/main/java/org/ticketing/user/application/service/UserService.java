@@ -32,6 +32,10 @@ public class UserService {
         return findUser(userId);
     }
 
+    public boolean existsById(UUID userId) {
+        return userRepository.findById(userId).isPresent();
+    }
+
     public List<User> getUsers() {
         return userRepository.findAll();
     }
