@@ -3,4 +3,12 @@ spring:
     name: user-service
 
   config:
-    import: optional:configserver:http://localhost:10002
+    import: ${SPRING_CONFIG_IMPORT:optional:configserver:http://localhost:10002}
+
+keycloak:
+  server-url: ${KEYCLOAK_SERVER_URL:http://localhost:18080}
+  realm: ${KEYCLOAK_REALM:ticketing}
+  admin-realm: ${KEYCLOAK_ADMIN_REALM:master}
+  admin-client-id: ${KEYCLOAK_ADMIN_CLIENT_ID:admin-cli}
+  admin-username: ${KEYCLOAK_ADMIN_USERNAME:admin}
+  admin-password: ${KEYCLOAK_ADMIN_PASSWORD}
