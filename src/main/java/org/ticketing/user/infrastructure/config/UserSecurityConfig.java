@@ -51,6 +51,9 @@ public class UserSecurityConfig {
                 // 로그인
                 .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
 
+                // 내부 서비스 호출
+                .requestMatchers("/internal/users/**").permitAll()
+
                 // 그 외 요청은 인증 필요
                 .anyRequest().authenticated()
             )
