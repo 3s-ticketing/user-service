@@ -32,6 +32,7 @@ public class UserController {
         return UserResponse.from(
             userService.signUp(
                 request.email(),
+                request.password(),
                 request.name(),
                 request.phone()
             )
