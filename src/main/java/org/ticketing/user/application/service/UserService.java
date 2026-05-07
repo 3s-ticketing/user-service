@@ -9,6 +9,7 @@ import org.ticketing.common.exception.ConflictException;
 import org.ticketing.common.exception.NotFoundException;
 import org.ticketing.user.domain.entity.User;
 import org.ticketing.user.domain.repository.UserRepository;
+import org.ticketing.user.infrastructure.keycloak.KeycloakUserService;
 
 @Service
 @RequiredArgsConstructor
@@ -16,12 +17,15 @@ import org.ticketing.user.domain.repository.UserRepository;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final KeycloakUserService keycloakUserService;
 
     @Transactional
-    public User signUp(String email, String name, String phone) {
+    public User signUp(String email, String password, String name, String phone) {
         if (userRepository.existsByEmailAndDeletedAtIsNull(email)) {
             throw new ConflictException("이미 존재하는 이메일입니다.");
         }
+
+        keycloakUserService.createUser(email, password, name);
 
         User user = User.createGeneral(email, name, phone);
 

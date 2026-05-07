@@ -6,7 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.ticketing.user.domain.entity.User;
+import org.ticketing.user.infrastructure.keycloak.KeycloakUserService;
 import org.ticketing.user.infrastructure.repository.JpaUserRepository;
 
 @ActiveProfiles("test")
@@ -15,6 +17,9 @@ class UserServiceApplicationTests {
 
 	@Autowired
 	private JpaUserRepository jpaUserRepository;
+
+	@MockitoBean
+	private KeycloakUserService keycloakUserService;
 
 	@Test
 	void contextLoads() {
