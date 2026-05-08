@@ -1,9 +1,11 @@
 package org.ticketing.user.infrastructure.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -19,6 +21,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.SecurityFilterChain;
 
+@Slf4j
 @Configuration
 @EnableMethodSecurity
 @Profile("!test")
@@ -48,14 +51,34 @@ public class UserSecurityConfig {
                 // 회원가입
                 .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
 
-                // 로그인
-                .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
-
                 // 내부 서비스 호출
                 .requestMatchers("/internal/users/**").permitAll()
 
-                // 그 외 요청은 인증 필요
+                // 그 외 요청은 Keycloak JWT 인증 필요
                 .anyRequest().authenticated()
+            )
+            .exceptionHandling(exception -> exception
+                .authenticationEntryPoint((request, response, authException) -> {
+                    log.warn(
+                        "[USER-401] method={} uri={} authHeaderPresent={} reason={}",
+                        request.getMethod(),
+                        request.getRequestURI(),
+                        request.getHeader("Authorization") != null,
+                        authException.getMessage()
+                    );
+
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                })
+                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                    log.warn(
+                        "[USER-403] method={} uri={} reason={}",
+                        request.getMethod(),
+                        request.getRequestURI(),
+                        accessDeniedException.getMessage()
+                    );
+
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                })
             )
             .oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt.jwtAuthenticationConverter(keycloakJwtAuthenticationConverter()))
@@ -86,6 +109,13 @@ public class UserSecurityConfig {
                     }
                 });
             }
+
+            log.info(
+                "[USER-JWT] subject={} issuer={} authorities={}",
+                jwt.getSubject(),
+                jwt.getIssuer(),
+                authorities
+            );
 
             return new JwtAuthenticationToken(jwt, authorities, jwt.getSubject());
         };
