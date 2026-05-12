@@ -25,3 +25,12 @@ logging:
     org.ticketing.user: DEBUG
     org.springframework.security: DEBUG
     org.springframework.security.oauth2: DEBUG
+
+management:
+  metrics:
+    tags:
+      application: ${spring.application.name}
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
