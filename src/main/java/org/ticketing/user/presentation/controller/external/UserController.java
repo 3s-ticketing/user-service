@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.ticketing.user.application.service.UserService;
 import org.ticketing.user.presentation.dto.request.UserSignupRequest;
 import org.ticketing.user.presentation.dto.request.UserUpdateRequest;
+import org.ticketing.user.presentation.dto.request.UserUpdateStatusRequest;
 import org.ticketing.user.presentation.dto.response.UserResponse;
 
 @RestController
@@ -34,7 +35,8 @@ public class UserController {
                 request.email(),
                 request.password(),
                 request.name(),
-                request.phone()
+                request.phone(),
+                request.role()
             )
         );
     }
@@ -66,6 +68,15 @@ public class UserController {
                 request.phone()
             )
         );
+    }
+
+    @PatchMapping("/{userId}/status")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateUserStatus(
+        @PathVariable UUID userId,
+        @Valid @RequestBody UserUpdateStatusRequest request
+    ) {
+        userService.updateUserStatus(userId, request.status());
     }
 
     @DeleteMapping("/{userId}")
