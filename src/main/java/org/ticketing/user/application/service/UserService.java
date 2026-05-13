@@ -35,6 +35,10 @@ public class UserService {
 
         keycloakUserService.createUser(email, password, name);
 
+        if (signUpRole == UserRole.GENERAL) {
+            keycloakUserService.assignRealmRoleByEmail(email, UserRole.GENERAL.name());
+        }
+
         User user = switch (signUpRole) {
             case GENERAL -> User.createGeneral(email, name, phone);
             case CLUB_ADMIN -> User.createClubAdmin(email, name, phone);
@@ -81,6 +85,7 @@ public class UserService {
 
         if (status == UserStatus.APPROVED) {
             user.approve();
+            keycloakUserService.assignRealmRoleByEmail(user.getEmail(), UserRole.CLUB_ADMIN.name());
         } else {
             user.reject();
         }

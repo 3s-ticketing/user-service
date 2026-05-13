@@ -6,6 +6,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -51,6 +52,30 @@ public class KeycloakUserService {
 
         setPassword(userId, password);
         clearRequiredActions(userId, name);
+    }
+
+    public void assignRealmRoleByEmail(String email, String roleName) {
+        List<UserRepresentation> users = keycloak.realm(realm)
+            .users()
+            .searchByEmail(email, true);
+
+        if (users.isEmpty()) {
+            throw new IllegalArgumentException("Keycloak 사용자를 찾을 수 없습니다. email=" + email);
+        }
+
+        String keycloakUserId = users.get(0).getId();
+
+        RoleRepresentation role = keycloak.realm(realm)
+            .roles()
+            .get(roleName)
+            .toRepresentation();
+
+        keycloak.realm(realm)
+            .users()
+            .get(keycloakUserId)
+            .roles()
+            .realmLevel()
+            .add(List.of(role));
     }
 
     private void setPassword(String userId, String password) {
