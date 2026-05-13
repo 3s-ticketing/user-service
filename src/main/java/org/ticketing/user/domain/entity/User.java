@@ -79,6 +79,10 @@ public class User extends BaseEntity {
         this.slackUserId = slackUserId;
     }
 
+    public void updateStatus(UserStatus status) {
+        this.status = status;
+    }
+
     public void approve() {
         this.status = UserStatus.APPROVED;
     }

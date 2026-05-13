@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.ticketing.common.exception.ConflictException;
 import org.ticketing.common.exception.NotFoundException;
 import org.ticketing.user.domain.entity.User;
+import org.ticketing.user.domain.enums.UserRole;
+import org.ticketing.user.domain.enums.UserStatus;
 import org.ticketing.user.domain.repository.UserRepository;
 import org.ticketing.user.infrastructure.keycloak.KeycloakUserService;
 
@@ -20,14 +22,24 @@ public class UserService {
     private final KeycloakUserService keycloakUserService;
 
     @Transactional
-    public User signUp(String email, String password, String name, String phone) {
+    public User signUp(String email, String password, String name, String phone, UserRole role) {
         if (userRepository.existsByEmailAndDeletedAtIsNull(email)) {
             throw new ConflictException("이미 존재하는 이메일입니다.");
         }
 
+        UserRole signUpRole = role == null ? UserRole.GENERAL : role;
+
+        if (signUpRole == UserRole.ADMIN) {
+            throw new IllegalArgumentException("관리자 계정은 직접 가입할 수 없습니다.");
+        }
+
         keycloakUserService.createUser(email, password, name);
 
-        User user = User.createGeneral(email, name, phone);
+        User user = switch (signUpRole) {
+            case GENERAL -> User.createGeneral(email, name, phone);
+            case CLUB_ADMIN -> User.createClubAdmin(email, name, phone);
+            case ADMIN -> throw new IllegalArgumentException("관리자 계정은 직접 가입할 수 없습니다.");
+        };
 
         return userRepository.save(user);
     }
@@ -49,6 +61,29 @@ public class UserService {
         User user = findUser(userId);
         user.update(name, phone);
         return user;
+    }
+
+    @Transactional
+    public void updateUserStatus(UUID userId, UserStatus status) {
+        User user = findUser(userId);
+
+        if (user.getRole() != UserRole.CLUB_ADMIN) {
+            throw new IllegalArgumentException("클럽 관리자 신청자만 승인 또는 거절할 수 있습니다.");
+        }
+
+        if (user.getStatus() != UserStatus.PENDING) {
+            throw new IllegalArgumentException("대기 상태의 클럽 관리자 신청만 처리할 수 있습니다.");
+        }
+
+        if (status != UserStatus.APPROVED && status != UserStatus.REJECTED) {
+            throw new IllegalArgumentException("가입 상태 변경은 APPROVED 또는 REJECTED만 가능합니다.");
+        }
+
+        if (status == UserStatus.APPROVED) {
+            user.approve();
+        } else {
+            user.reject();
+        }
     }
 
     @Transactional
