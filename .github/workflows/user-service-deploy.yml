@@ -45,6 +45,8 @@ jobs:
       - name: Build Docker image
         run: |
           docker build \
+            --build-arg GPR_USER=${{ secrets.GPR_USER }} \
+            --build-arg GPR_TOKEN=${{ secrets.GPR_TOKEN }} \
             -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG \
             -t $REGISTRY/$IMAGE_NAME:${{ github.sha }} \
             .
