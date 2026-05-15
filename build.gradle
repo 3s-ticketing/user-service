@@ -15,6 +15,15 @@ java {
 
 repositories {
 	mavenCentral()
+
+	maven {
+		name = "GitHubPackages"
+		url = uri("https://maven.pkg.github.com/3s-ticketing/common-module")
+		credentials {
+			username = System.getenv("GPR_USER")
+			password = System.getenv("GPR_TOKEN")
+		}
+	}
 }
 
 ext {
@@ -22,15 +31,31 @@ ext {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+	// 공통 모듈 (org.ticketing:common:2.0-SNAPSHOT 로 publish 됨)
+	implementation 'org.ticketing:common:2.0-SNAPSHOT'
 
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+
+	// Monitoring
+	runtimeOnly 'org.springframework.boot:spring-boot-starter-actuator'
+	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+
+	// Keycloak Admin Client
+	implementation 'org.keycloak:keycloak-admin-client:26.0.0'
+
+	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 	implementation 'org.springframework.cloud:spring-cloud-starter-config'
+
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	runtimeOnly 'org.postgresql:postgresql'
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'com.h2database:h2'
 }
 
 dependencyManagement {
@@ -41,4 +66,11 @@ dependencyManagement {
 
 tasks.named('test') {
 	useJUnitPlatform()
+
+	systemProperty 'spring.profiles.active', 'test'
+	systemProperty 'spring.cloud.config.enabled', 'false'
+	systemProperty 'spring.cloud.config.fail-fast', 'false'
+	systemProperty 'spring.cloud.bootstrap.enabled', 'false'
+	systemProperty 'spring.cloud.discovery.enabled', 'false'
+	systemProperty 'eureka.client.enabled', 'false'
 }
