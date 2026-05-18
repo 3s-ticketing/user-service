@@ -55,3 +55,15 @@ jobs:
         run: |
           docker push $REGISTRY/$IMAGE_NAME:$IMAGE_TAG
           docker push $REGISTRY/$IMAGE_NAME:${{ github.sha }}
+
+      - name: Deploy user-service to EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~/deploy/ticketing/ticketing-system
+            docker compose -f docker-compose.app.yml pull user-service
+            docker compose -f docker-compose.app.yml up -d --no-deps --force-recreate user-service
+            docker image prune -f
