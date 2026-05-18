@@ -63,7 +63,10 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            echo "${{ secrets.GPR_TOKEN }}" | docker login ghcr.io -u ${{ secrets.GPR_USER }} --password-stdin
             cd ~/deploy/ticketing/ticketing-system
             docker compose -f docker-compose.app.yml pull user-service
             docker compose -f docker-compose.app.yml up -d --no-deps --force-recreate user-service
+            docker ps --filter "name=ticketing-user-service"
             docker image prune -f
+            
