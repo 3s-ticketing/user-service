@@ -35,12 +35,12 @@ jobs:
 
       - name: Run tests
         env:
-          GPR_USER: ${{ github.actor }}
-          GPR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GPR_USER: ${{ secrets.GPR_USER }}
+          GPR_TOKEN: ${{ secrets.GPR_TOKEN }}
         run: ./gradlew clean test
 
       - name: Log in to GitHub Container Registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        run: echo "${{ secrets.GPR_TOKEN }}" | docker login ghcr.io -u ${{ secrets.GPR_USER }} --password-stdin
 
       - name: Build Docker image
         run: |
@@ -69,4 +69,3 @@ jobs:
             docker compose -f docker-compose.app.yml up -d --no-deps --force-recreate user-service
             docker ps --filter "name=ticketing-user-service"
             docker image prune -f
-            
